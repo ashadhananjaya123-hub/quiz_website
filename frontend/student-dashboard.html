@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Dashboard - AI Quiz System</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-badge">✦</div>
+        <div>
+          <div class="sidebar-title">AI Quiz Studio</div>
+          <div class="sidebar-subtitle">Student Portal</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a class="nav-item active">
+          <span class="nav-icon">📚</span>
+          <span>My Quizzes</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-badge">
+          <div class="user-avatar">S</div>
+          <div class="user-info">
+            <div class="user-name">Student</div>
+            <div class="user-role-tag">Learner</div>
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="Auth.clearSession()" title="Sign Out">🚪</button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-wrapper">
+      <header class="top-navbar">
+        <div class="page-title">Available Quizzes & Performance</div>
+        <div>
+          <span class="badge badge-approved">Student Session</span>
+        </div>
+      </header>
+
+      <div class="content-body">
+        <!-- Summary Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">Quizzes Completed</div>
+              <div class="stat-value" id="student-stat-completed">0</div>
+            </div>
+            <div class="stat-icon-wrapper" style="background: var(--primary-light); color: var(--primary);">🎯</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">Average Score</div>
+              <div class="stat-value" id="student-stat-avg">0%</div>
+            </div>
+            <div class="stat-icon-wrapper" style="background: var(--success-light); color: var(--success);">📊</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-info">
+              <div class="stat-label">Highest Score</div>
+              <div class="stat-value" id="student-stat-highest">0%</div>
+            </div>
+            <div class="stat-icon-wrapper" style="background: var(--warning-light); color: var(--warning);">🏆</div>
+          </div>
+        </div>
+
+        <!-- Available Quizzes Section -->
+        <div style="margin-bottom: 32px;">
+          <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Active Quizzes for You</h2>
+          <div id="available-quizzes-container">
+            <div style="text-align: center; padding: 40px;"><span class="spinner"></span> Loading available quizzes...</div>
+          </div>
+        </div>
+
+        <!-- Past Attempts Section -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">My Quiz History & Results</div>
+              <div class="card-subtitle">Review your previous scores and study the AI explanations</div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Quiz Title</th>
+                  <th>My Score</th>
+                  <th>Date Attempted</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="attempt-history-tbody">
+                <tr>
+                  <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                    Loading your history...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/student.js"></script>
+</body>
+</html>

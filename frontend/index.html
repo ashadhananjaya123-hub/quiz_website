@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - AI Quiz Management System</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      padding: 20px;
+    }
+    .auth-box {
+      background: white;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 440px;
+      padding: 36px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    }
+    .auth-tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border-color);
+      margin-bottom: 24px;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+    }
+    .auth-tab.active {
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    .role-toggle-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .role-pill {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      text-align: center;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .role-pill.active {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+    .dev-mode-box {
+      margin-top: 24px;
+      padding: 14px;
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body class="auth-page">
+
+  <div class="auth-box">
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 28px;">
+      <div class="logo-badge" style="margin: 0 auto 12px; width: 48px; height: 48px; font-size: 24px;">✦</div>
+      <h1 style="font-size: 22px; font-weight: 800; color: var(--text-main);">AI Quiz System</h1>
+      <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">AI-Powered Quiz Generation & Management</p>
+    </div>
+
+    <!-- Tabs: Sign In / Register -->
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</div>
+      <div class="auth-tab" id="tab-signup" onclick="switchAuthTab('signup')">Create Account</div>
+    </div>
+
+    <!-- Role Selection -->
+    <div class="form-group">
+      <label class="form-label">I am a:</label>
+      <div class="role-toggle-group">
+        <div class="role-pill active" id="role-teacher" onclick="selectRole('teacher')">
+          👨‍🏫 Teacher
+        </div>
+        <div class="role-pill" id="role-student" onclick="selectRole('student')">
+          🎓 Student
+        </div>
+      </div>
+    </div>
+
+    <!-- Auth Form -->
+    <form id="auth-form">
+      <div class="form-group" id="group-fullname" style="display: none;">
+        <label class="form-label" for="full-name">Full Name</label>
+        <input type="text" id="full-name" class="form-input" placeholder="e.g. Dr. Jane Doe" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">Email Address</label>
+        <input type="email" id="email" class="form-input" placeholder="name@college.edu" required />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Password</label>
+        <input type="password" id="password" class="form-input" placeholder="••••••••" required />
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 15px;" id="auth-submit-btn">
+        Sign In
+      </button>
+    </form>
+
+    <!-- Quick Development Launch / Demo Bypass -->
+    <div class="dev-mode-box">
+      <div style="font-weight: 700; color: var(--text-main); margin-bottom: 6px;">⚡ Quick Development Access:</div>
+      <p style="color: var(--text-muted); margin-bottom: 10px;">
+        Instant one-click access for local testing:
+      </p>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn-secondary btn-sm" style="flex: 1;" onclick="launchDevSession('teacher')">Enter as Teacher</button>
+        <button class="btn btn-secondary btn-sm" style="flex: 1;" onclick="launchDevSession('student')">Enter as Student</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    let currentAuthMode = "login";
+    let selectedRole = "teacher";
+
+    function switchAuthTab(mode) {
+      currentAuthMode = mode;
+      document.getElementById("tab-login").classList.toggle("active", mode === "login");
+      document.getElementById("tab-signup").classList.toggle("active", mode === "signup");
+      document.getElementById("group-fullname").style.display = mode === "signup" ? "block" : "none";
+      document.getElementById("auth-submit-btn").textContent = mode === "login" ? "Sign In" : "Register & Start";
+    }
+
+    function selectRole(role) {
+      selectedRole = role;
+      document.getElementById("role-teacher").classList.toggle("active", role === "teacher");
+      document.getElementById("role-student").classList.toggle("active", role === "student");
+    }
+
+    async function launchDevSession(role) {
+      showToast(`Connecting to Supabase session for ${role}...`, "info");
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/quick-access`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ role }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          Auth.setSession(data.token, data.profile);
+          showToast(`Welcome! Logged in as ${data.profile.full_name || role}.`, "success");
+          setTimeout(() => {
+            window.location.href = data.profile.role === "teacher" ? "teacher-dashboard.html" : "student-dashboard.html";
+          }, 400);
+        } else {
+          showToast(data.message || "Login failed.", "error");
+        }
+      } catch (err) {
+        showToast("Server connection error: " + err.message, "error");
+      }
+    }
+
+    document.getElementById("auth-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const fullName = document.getElementById("full-name").value.trim();
+      const btn = document.getElementById("auth-submit-btn");
+
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner"></span> Please wait...`;
+
+      try {
+        const endpoint = currentAuthMode === "signup" ? "/api/auth/register" : "/api/auth/login";
+        const payload = currentAuthMode === "signup" 
+          ? { email, password, role: selectedRole, fullName }
+          : { email, password };
+
+        const res = await fetch(`${API_BASE}${endpoint}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          Auth.setSession(data.token, data.profile);
+          showToast(`Success! Welcome ${data.profile.full_name || email}.`, "success");
+          setTimeout(() => {
+            window.location.href = data.profile.role === "teacher" ? "teacher-dashboard.html" : "student-dashboard.html";
+          }, 400);
+        } else {
+          showToast(data.message || "Authentication failed.", "error");
+        }
+      } catch (err) {
+        showToast("Network error: " + err.message, "error");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = currentAuthMode === "login" ? "Sign In" : "Register & Start";
+      }
+    });
+  </script>
+</body>
+</html>

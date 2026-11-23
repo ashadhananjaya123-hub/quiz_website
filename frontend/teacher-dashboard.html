@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Teacher Dashboard - AI Quiz System</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-badge">✦</div>
+        <div>
+          <div class="sidebar-title">AI Quiz Studio</div>
+          <div class="sidebar-subtitle">Teacher Portal</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a class="nav-item active" data-section="dashboard-section">
+          <span class="nav-icon">📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a class="nav-item" data-section="upload-section">
+          <span class="nav-icon">📄</span>
+          <span>Upload PDF</span>
+        </a>
+        <a class="nav-item" data-section="questions-section">
+          <span class="nav-icon">🗂️</span>
+          <span>Question Bank</span>
+        </a>
+        <a class="nav-item" data-section="create-quiz-section">
+          <span class="nav-icon">📝</span>
+          <span>Create Quiz</span>
+        </a>
+        <a class="nav-item" data-section="analytics-section">
+          <span class="nav-icon">📈</span>
+          <span>Student Results</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile-badge">
+          <div class="user-avatar">T</div>
+          <div class="user-info">
+            <div class="user-name">Teacher</div>
+            <div class="user-role-tag">Instructor</div>
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-sm" onclick="Auth.clearSession()" title="Sign Out">🚪</button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-wrapper">
+      <header class="top-navbar">
+        <div class="page-title" id="page-heading">Teacher Overview</div>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <button class="btn btn-primary btn-sm" onclick="document.querySelector('[data-section=\'upload-section\']').click()">
+            + Upload PDF
+          </button>
+          <button class="btn btn-secondary btn-sm" onclick="document.querySelector('[data-section=\'create-quiz-section\']').click()">
+            + New Quiz
+          </button>
+        </div>
+      </header>
+
+      <div class="content-body">
+
+        <!-- ==========================================
+             SECTION 1: DASHBOARD OVERVIEW
+             ========================================== -->
+        <section id="dashboard-section" class="tab-section">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Total Quizzes</div>
+                <div class="stat-value" id="stat-total-quizzes">0</div>
+              </div>
+              <div class="stat-icon-wrapper" style="background: var(--primary-light); color: var(--primary);">📝</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Question Bank</div>
+                <div class="stat-value" id="stat-total-questions">0</div>
+              </div>
+              <div class="stat-icon-wrapper" style="background: var(--secondary-light); color: var(--secondary);">🗂️</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Students Tested</div>
+                <div class="stat-value" id="stat-total-students">0</div>
+              </div>
+              <div class="stat-icon-wrapper" style="background: var(--success-light); color: var(--success);">🎓</div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">Average Score</div>
+                <div class="stat-value" id="stat-avg-score">0%</div>
+              </div>
+              <div class="stat-icon-wrapper" style="background: var(--warning-light); color: var(--warning);">⭐</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Recent Student Activity</div>
+                <div class="card-subtitle">Live evaluation log of submitted quizzes</div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Student</th>
+                    <th>Quiz Title</th>
+                    <th>Score</th>
+                    <th>Status</th>
+                    <th>Submitted At</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-activity-tbody">
+                  <tr>
+                    <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                      Loading recent activity...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             SECTION 2: UPLOAD PDF & GENERATE MCQS
+             ========================================== -->
+        <section id="upload-section" class="tab-section" style="display: none;">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Upload Study Material</div>
+                <div class="card-subtitle">Upload lecture notes or textbook chapters in PDF format for Gemini AI reading</div>
+              </div>
+            </div>
+
+            <form id="pdf-upload-form" enctype="multipart/form-data">
+              <div class="form-group">
+                <label class="form-label">Material Title</label>
+                <input type="text" name="title" class="form-input" placeholder="e.g. Chapter 4: Java Annotations and Enums" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Select PDF Document</label>
+                <div class="upload-dropzone" onclick="document.getElementById('pdf-file-input').click()">
+                  <div class="dropzone-icon">📁</div>
+                  <div style="font-weight: 600; font-size: 15px;">Click to browse or drop PDF here</div>
+                  <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Max file size: 25 MB</div>
+                  <div id="file-name-display" style="margin-top: 10px; font-weight: 600; color: var(--primary);"></div>
+                  <input type="file" id="pdf-file-input" name="pdf" accept="application/pdf" style="display: none;" required />
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                <div class="form-group">
+                  <label class="form-label">Number of MCQs to Generate</label>
+                  <select name="questionCount" class="form-select">
+                    <option value="5">5 Questions (Fast)</option>
+                    <option value="10" selected>10 Questions</option>
+                    <option value="15">15 Questions</option>
+                    <option value="20">20 Questions (Comprehensive)</option>
+                  </select>
+                </div>
+
+                <div class="form-group" style="display: flex; align-items: center; margin-top: 26px;">
+                  <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer;">
+                    <input type="checkbox" name="generateQuestions" value="true" checked style="width: 18px; height: 18px;" />
+                    <span>Auto-generate MCQs with Gemini AI immediately</span>
+                  </label>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary" id="upload-submit-btn" style="padding: 12px 24px;">
+                Upload & Generate MCQs
+              </button>
+            </form>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Uploaded Materials</div>
+                <div class="card-subtitle">Previously uploaded lecture materials in your storage</div>
+              </div>
+            </div>
+            <div id="materials-list-container">
+              <p style="color: var(--text-muted); padding: 16px;">Loading materials...</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             SECTION 3: QUESTION BANK
+             ========================================== -->
+        <section id="questions-section" class="tab-section" style="display: none;">
+          <div class="card" style="margin-bottom: 20px;">
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between;">
+              <div style="flex: 1; min-width: 240px;">
+                <input type="text" id="question-search-input" class="form-input" placeholder="🔍 Search questions, options, or explanations..." />
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <select id="filter-status" class="form-select" style="width: 150px;">
+                  <option value="all">All Statuses</option>
+                  <option value="pending" selected>Pending Review</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+
+                <select id="filter-difficulty" class="form-select" style="width: 150px;">
+                  <option value="all">All Difficulties</option>
+                  <option value="Easy">Easy</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Hard">Hard</option>
+                </select>
+
+                <button class="btn btn-primary" onclick="triggerAIGeneration(null)">
+                  + AI Generate
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div id="questions-container">
+            <div style="text-align: center; padding: 40px;"><span class="spinner"></span> Loading questions...</div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             SECTION 4: CREATE QUIZ
+             ========================================== -->
+        <section id="create-quiz-section" class="tab-section" style="display: none;">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Create New Quiz</div>
+                <div class="card-subtitle">Set duration and difficulty distribution. Randomization is performed dynamically per student attempt.</div>
+              </div>
+            </div>
+
+            <div id="quiz-pool-stats" style="margin-bottom: 20px; padding: 12px 16px; background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 13px;">
+              Loading question pool counts...
+            </div>
+
+            <form id="create-quiz-form">
+              <div class="form-group">
+                <label class="form-label">Quiz Title</label>
+                <input type="text" id="quiz-title" class="form-input" placeholder="e.g. Midterm Test: Java Annotations & Collections" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Description / Instructions</label>
+                <textarea id="quiz-description" class="form-textarea" rows="2" placeholder="e.g. Read each question carefully. No external reference materials allowed."></textarea>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group">
+                  <label class="form-label">Time Limit (Minutes)</label>
+                  <input type="number" id="quiz-duration" class="form-input" value="15" min="1" max="180" required />
+                </div>
+
+                <div class="form-group" style="display: flex; align-items: center; margin-top: 26px;">
+                  <label style="display: flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer;">
+                    <input type="checkbox" id="quiz-is-published" checked style="width: 18px; height: 18px;" />
+                    <span>Publish quiz immediately for students</span>
+                  </label>
+                </div>
+              </div>
+
+              <div style="margin: 20px 0; padding: 18px; background: #f8fafc; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <div style="font-weight: 700; font-size: 14px; margin-bottom: 6px;">🎯 Difficulty Distribution:</div>
+                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 14px;">
+                  Specify the exact number of questions per difficulty. All students will receive this identical distribution even with randomized question sets!
+                </p>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" style="color: #047857;">Easy Questions</label>
+                    <input type="number" id="quiz-easy-count" class="form-input" value="4" min="0" />
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" style="color: #b45309;">Medium Questions</label>
+                    <input type="number" id="quiz-medium-count" class="form-input" value="4" min="0" />
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" style="color: #b91c1c;">Hard Questions</label>
+                    <input type="number" id="quiz-hard-count" class="form-input" value="2" min="0" />
+                  </div>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="padding: 12px 24px;">
+                Create & Configure Quiz
+              </button>
+            </form>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Existing Quizzes</div>
+                <div class="card-subtitle">Manage publish status and examine student performance</div>
+              </div>
+            </div>
+            <div id="teacher-quizzes-list">
+              <p style="color: var(--text-muted); padding: 16px;">Loading quizzes...</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==========================================
+             SECTION 5: ANALYTICS & STUDENT RESULTS
+             ========================================== -->
+        <section id="analytics-section" class="tab-section" style="display: none;">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Quiz Performance Analytics</div>
+                <div class="card-subtitle">Comprehensive breakdown of student attempts and difficulty accuracy</div>
+              </div>
+            </div>
+            <div id="analytics-summary-view">
+              <p style="color:var(--text-muted); padding: 16px;">Select a quiz from the Quizzes tab or view recent submissions on the main Dashboard.</p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- EDIT QUESTION MODAL -->
+  <div class="modal-overlay" id="edit-question-modal">
+    <div class="modal" style="max-width: 680px;">
+      <div class="modal-header">
+        <h3 style="font-size: 16px; font-weight: 700;">Edit Question</h3>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('edit-question-modal')">✕</button>
+      </div>
+      <form id="edit-question-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Question Text</label>
+            <textarea id="edit-q-text" class="form-textarea" rows="3" required></textarea>
+          </div>
+
+          <label class="form-label">Four Answer Options (Select which option is correct)</label>
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <input type="radio" name="edit-correct-opt" value="0" id="radio-opt-0" required />
+              <input type="text" id="edit-opt-0" class="form-input" placeholder="Option A" required />
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <input type="radio" name="edit-correct-opt" value="1" id="radio-opt-1" required />
+              <input type="text" id="edit-opt-1" class="form-input" placeholder="Option B" required />
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <input type="radio" name="edit-correct-opt" value="2" id="radio-opt-2" required />
+              <input type="text" id="edit-opt-2" class="form-input" placeholder="Option C" required />
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <input type="radio" name="edit-correct-opt" value="3" id="radio-opt-3" required />
+              <input type="text" id="edit-opt-3" class="form-input" placeholder="Option D" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Difficulty Tier</label>
+            <select id="edit-difficulty" class="form-select">
+              <option value="Easy">Easy</option>
+              <option value="Medium">Medium</option>
+              <option value="Hard">Hard</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Educational Explanation</label>
+            <textarea id="edit-explanation" class="form-textarea" rows="3" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('edit-question-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- QUIZ ANALYTICS DEEP-DIVE MODAL -->
+  <div class="modal-overlay" id="quiz-analytics-modal">
+    <div class="modal" style="max-width: 760px;">
+      <div class="modal-header">
+        <h3 style="font-size: 16px; font-weight: 700;">Quiz Analytics Breakdown</h3>
+        <button class="btn btn-secondary btn-sm" onclick="closeModal('quiz-analytics-modal')">✕</button>
+      </div>
+      <div class="modal-body" id="quiz-analytics-modal-body">
+        Loading...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('quiz-analytics-modal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/teacher.js"></script>
+</body>
+</html>
